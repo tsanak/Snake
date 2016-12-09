@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Snake Game</title>
+  </head>
+  <body>
+    <style>
+      .scoreboard
+      {
+        height:600px;
+        width:200px;
+        background-color: #712626;
+        position:absolute;
+        left:610px;
+        color:white;
+      }
+      .text-center
+      {
+        text-align: center;
+      }
+      #retry
+      {
+        position:absolute;
+        left:50%;
+        top:50%;
+        margin-left: -125px;
+        margin-top: -75px;
+        width: 250px;
+        height: 150px;
+        background-color: lightblue;
+        text-align: center;
+        z-index: 2;
+        display: none;
+      }
+      #overlay
+      {
+        position:absolute;
+        top:0;
+        left:0;
+        width: 100%;
+        height:100%;
+        background-color: rgba(0, 0, 0, 0.55);
+        z-index: 1;
+        display: none;
+      }
+    </style>
+    <div id="overlay"></div>
+    <div id="retry">
+      <h2>You lost</h2>
+      <h2>Your score is : <span id="player_score"></span></h2>
+      <button type="button" id='play_again' name="play_again">Play again</button>
+    </div>
+    <div class="scoreboard text-center">
+      <h2>Score</h2>
+      <h2 id='score'></h2>
+      <br>
+      <h2>Time</h2>
+      <h2 id='timeElapsed'></h2>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.5/p5.min.js"></script>
+    <script src="snake.js"></script>
+    <script>
+    /*
+      TODO :// 1. put images
+               2. snake dies if hits the boundaries
+               3. score e.g. 10 per food & time played
+               4. maybe add bonus food with timeout
+    */
+var snake;
+var grid;
+var width;
+var height;
+var score;
+var food;
+var time;
+var totalTime;
+
+function preload() {  // preload() runs once
+  grid = 10;
+  width = 600;
+  height = 600;
+  score = 0;
+  totalTime = 0;
+}
+
+function setup() {  // setup() runs once
+  createCanvas(width,height);
+  frameRate(10);
+  snake = new Snake(grid);
+  food = new Food(grid);
+}
+function draw() {  // draw() loops forever, until stopped
+  updateGui(score);
+  background(65);
+  snake.drawSnake();
+  if(snake.total!=0 && snake.total % 10 === 0) food.superfood();
+  else food.drawFood();
+  var foodPos = createVector(food.posX,food.posY);
+  if(snake.eat(foodPos))
+  {
+    score += food.score;
+    food = new Food(grid);
+  }
+  if(snake.death())
+  {
+    retry();
+    updateGui(0);
+    clearInterval(timer);
+    snake.drawSnake();
+    noLoop();
+  }
+}
+function keyPressed() {
+  snake.moveSnake(keyCode);
+}
+
+var Food = function(grid)
+{
+  this.posX = Math.floor(random(Math.floor(width/grid)))*grid;
+  this.posY = Math.floor(random(Math.floor(height/grid)))*grid;
+  this.score = 10;
+  this.drawFood = function(){
+    fill('#F47A9D');
+    rect(this.posX,this.posY,grid,grid);
+  };
+  this.superfood = function(){
+    this.score = 100;
+    fill(255, 204, 0);
+    rect(this.posX,this.posY,grid,grid);
+  }
+}
+function updateGui(score)
+{
+  var sc = document.querySelector("#score");
+  sc.innerHTML = score;
+}
+
+var timer = setInterval(myTimer, 1000);
+function myTimer() {
+  totalTime += 1;
+  var minutes = Math.floor(totalTime / 60);
+  var seconds = totalTime % 60;
+  var ti = document.querySelector("#timeElapsed");
+  var finalTime = str_pad_left(minutes,'0',2)+':'+str_pad_left(seconds,'0',2);
+  ti.innerHTML = finalTime;
+}
+function str_pad_left(string,pad,length) {
+    return (new Array(length+1).join(pad)+string).slice(-length);
+}
+function retry(){
+  var retry = document.querySelector('#retry');
+  retry.style.display = 'block';
+  var overlay = document.querySelector('#overlay');
+  overlay.style.display = 'block';
+  var player_score = document.querySelector('#player_score');
+  player_score.innerHTML = score;
+  var play_again = document.querySelector('#play_again');
+  play_again.addEventListener("click", function(){ location.reload(); }, false);
+}
+    </script>
+  </body>
+</html>
