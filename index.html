@@ -77,7 +77,7 @@ var time;
 var totalTime;
 
 function preload() {  // preload() runs once
-  grid = 10;
+  grid = 15;
   width = 600;
   height = 600;
   score = 0;
@@ -110,6 +110,7 @@ function draw() {  // draw() loops forever, until stopped
     snake.drawSnake();
     noLoop();
   }
+  frameRate(7);
 }
 function keyPressed() {
   snake.moveSnake(keyCode);

@@ -1,12 +1,15 @@
 var Snake = function(grid)
 {
-  this.speedX = 1*grid;
+  this.initialSpeed = grid;
+  this.speedX = this.initialSpeed;
   this.speedY = 0;
-  this.posX = 10;
-  this.posY = 10;
+  this.posX = grid;
+  this.posY = grid;
   this.currentDir = 'right';
   this.tail = [];
   this.total = 0;
+  this.headColor = '#00ad42';
+  this.tailColor = '#006627';
 
   this.drawSnake = function()
   {
@@ -40,11 +43,11 @@ var Snake = function(grid)
     //this.posX = constrain(this.posX,0,width-grid);
     //this.posY = constrain(this.posY,0,height-grid);
 
-    fill(255);
+    fill(this.tailColor);
     for (var i = 0; i < this.tail.length; i++) {
       rect(this.tail[i].x, this.tail[i].y, grid, grid);
     }
-
+    fill(this.headColor);
     rect(this.posX,this.posY,grid,grid);
   };
 
@@ -54,7 +57,7 @@ var Snake = function(grid)
     {
       if(this.currentDir != 'right')
       {
-        this.speedX = -1*grid;
+        this.speedX = -this.initialSpeed;
         this.speedY = 0;
         this.currentDir = 'left';
       }
@@ -62,7 +65,7 @@ var Snake = function(grid)
     {
       if(this.currentDir != 'left')
       {
-        this.speedX = 1*grid;
+        this.speedX = this.initialSpeed;
         this.speedY = 0;
         this.currentDir = 'right';
       }
@@ -70,7 +73,7 @@ var Snake = function(grid)
     {
       if(this.currentDir != 'down')
       {
-        this.speedY = -1*grid;
+        this.speedY = -this.initialSpeed;
         this.speedX = 0;
         this.currentDir = 'up';
       }
@@ -78,7 +81,7 @@ var Snake = function(grid)
     {
       if(this.currentDir != 'up')
       {
-        this.speedY = 1*grid;
+        this.speedY = this.initialSpeed;
         this.speedX = 0;
         this.currentDir = 'down';
       }
@@ -87,7 +90,7 @@ var Snake = function(grid)
 
   this.eat = function(position){
     var d = dist(this.posX, this.posY , position.x , position.y);
-    if(d<2)
+    if(d<4)
     {
       this.grow();
       return true;
